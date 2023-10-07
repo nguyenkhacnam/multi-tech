@@ -1,7 +1,25 @@
-import { Fragment } from 'react'
+import { getStudents, getTodos } from '../../apis/students.api'
+import { Fragment, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useQuery } from '@tanstack/react-query'
+import { useQueryString } from '../../utils/utils'
+
+const LIMIT = 5
 
 export default function Students() {
+  const queryString = useQueryString()
+  const page = Number(queryString.page) || 1
+
+  const { data, isLoading } = useQuery({
+    queryKey: ['students', page],
+    queryFn: () => getStudents(page, LIMIT)
+  })
+
+  const totalStudentsCount = Number(data?.headers['x-total-count']) || 0
+  const totalPage = Math.ceil(totalStudentsCount / LIMIT)
+
+  console.log('totalPage', totalPage)
+  console.log('X-Total-Count', data?.headers['x-total-count']) // "?" - optional chaining
 
   return (
     <div>
@@ -82,13 +100,20 @@ export default function Students() {
                     Previous
                   </span>
                 </li>
-                <li>
-                  <a
-                    className='border border-gray-300 bg-white bg-white py-2 px-3 leading-tight text-gray-500 text-gray-500  hover:bg-gray-100 hover:bg-gray-100 hover:text-gray-700 hover:text-gray-700'
-                    href='/students?page=8'>
-                    1
-                  </a>
-                </li>
+                {Array(totalPage)
+                  .fill(0)
+                  .map((_, index) => {
+                    const numberPage = index + 1
+                    return (
+                      <li key={numberPage}>
+                        <Link
+                          className='border border-gray-300 bg-white bg-white py-2 px-3 leading-tight text-gray-500 text-gray-500  hover:bg-gray-100 hover:bg-gray-100 hover:text-gray-700 hover:text-gray-700'
+                          to={`/students?page=${numberPage}`}>
+                          {numberPage}
+                        </Link>
+                      </li>
+                    )
+                  })}
                 <li>
                   <a
                     className='rounded-r-lg border border-gray-300 bg-white py-2 px-3 leading-tight text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white'
