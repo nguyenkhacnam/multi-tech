@@ -3,8 +3,9 @@ import { Fragment, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { useQueryString } from '../../utils/utils'
+import classNames from 'classnames'
 
-const LIMIT = 5
+const LIMIT = 7
 
 export default function Students() {
   const queryString = useQueryString()
@@ -96,18 +97,34 @@ export default function Students() {
             <nav aria-label='Page navigation example'>
               <ul className='inline-flex -space-x-px'>
                 <li>
-                  <span className='cursor-not-allowed rounded-l-lg border border-gray-300 bg-white py-2 px-3 leading-tight text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white'>
-                    Previous
-                  </span>
+                  {page === 1 && (
+                    <span className='cursor-not-allowed rounded-l-lg border border-gray-300 bg-white py-2 px-3 leading-tight text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white'>
+                      Previous
+                    </span>
+                  )}
+                  {page !== 1 && (
+                    <Link
+                      className='cursor-pointer rounded-l-lg border border-gray-300 bg-white py-2 px-3 leading-tight text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white'
+                      to={`/students/?page=${page - 1}`}>
+                      Previous
+                    </Link>
+                  )}
                 </li>
                 {Array(totalPage)
                   .fill(0)
                   .map((_, index) => {
                     const numberPage = index + 1
+                    const isActive = page === numberPage
+                    console.log('first', isActive)
                     return (
                       <li key={numberPage}>
                         <Link
-                          className='border border-gray-300 bg-white bg-white py-2 px-3 leading-tight text-gray-500 text-gray-500  hover:bg-gray-100 hover:bg-gray-100 hover:text-gray-700 hover:text-gray-700'
+                          className={classNames('border border-gray-300  bg-white py-2 px-3 leading-tight text-gray-500  hover:bg-gray-100  hover:text-gray-700 ',
+                            {
+                              'bg-gray-500 text-gray-700': isActive,
+                              'bg-white text-gray-500': !isActive
+                            }
+                          )}
                           to={`/students?page=${numberPage}`}>
                           {numberPage}
                         </Link>
@@ -115,11 +132,19 @@ export default function Students() {
                     )
                   })}
                 <li>
-                  <a
-                    className='rounded-r-lg border border-gray-300 bg-white py-2 px-3 leading-tight text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white'
-                    href='/students?page=1'>
-                    Next
-                  </a>
+                  {page === totalPage && (
+                    <span
+                      className='cursor-not-allowed rounded-r-lg border border-gray-300 bg-white py-2 px-3 leading-tight text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white'>
+                      Next
+                    </span>
+                  )}
+                  {page !== totalPage && (
+                    <Link
+                      className='cursor-pointer rounded-r-lg border border-gray-300 bg-white py-2 px-3 leading-tight text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white'
+                      to={`/students/?page=${page + 1}`}>
+                      Next
+                    </Link>
+                  )}
                 </li>
               </ul>
             </nav>
